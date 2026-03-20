@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/character_provider.dart';
+import '../models/character.dart';
 import 'explore_screen.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -61,6 +62,10 @@ class FavoritesScreen extends StatelessWidget {
               itemCount: favorites.length,
               itemBuilder: (context, index) {
                 final id = favorites[index];
+                final data = context.read<CharacterProvider>().favoriteData(id);
+                final displayName = data != null ? data['name'] ?? 'Personaje' : 'Personaje ID: $id';
+                final displayStatus = data != null ? data['status'] ?? '' : 'ID: $id';
+                final imageUrl = data != null ? data['image'] ?? '' : '';
 
                 return Dismissible(
                   key: ValueKey(id),
@@ -72,17 +77,30 @@ class FavoritesScreen extends StatelessWidget {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   onDismissed: (_) {
-                    // remove and show undo
+                    // capture data for undo
+                    final removedData = context.read<CharacterProvider>().favoriteData(id);
                     context.read<CharacterProvider>().removeFavorite(id);
 
                     ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Removed favorite: $id'),
+                        content: Text('Removed favorite: $displayName'),
                         action: SnackBarAction(
                           label: 'Deshacer',
                           onPressed: () {
-                            context.read<CharacterProvider>().addFavorite(id);
+                            if (removedData != null) {
+                              // recreate a minimal Character for restoring
+                              context.read<CharacterProvider>().addFavorite(
+                                  id,
+                                  character: Character(
+                                    id: int.tryParse(id) ?? 0,
+                                    name: removedData['name'] ?? '',
+                                    status: removedData['status'] ?? '',
+                                    image: removedData['image'] ?? '',
+                                  ));
+                            } else {
+                              context.read<CharacterProvider>().addFavorite(id);
+                            }
                           },
                         ),
                       ),
@@ -91,14 +109,16 @@ class FavoritesScreen extends StatelessWidget {
                   child: Card(
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text(
-                          id.isNotEmpty ? id[0].toUpperCase() : '?',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      title: Text('Personaje ID: $id'),
-                      subtitle: Text('ID: $id'),
+                      leading: imageUrl.isNotEmpty
+                          ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
+                          : CircleAvatar(
+                              child: Text(
+                                id.isNotEmpty ? id[0].toUpperCase() : '?',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                      title: Text(displayName),
+                      subtitle: Text(displayStatus),
                       trailing: IconButton(
                         icon: const Icon(Icons.favorite, color: Colors.red),
                         onPressed: () {
