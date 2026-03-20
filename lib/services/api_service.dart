@@ -1,12 +1,8 @@
-import 'dart:async';
+// Servicio deshabilitado localmente: la implementación real de API
+// (incluyendo `Character`) se gestiona en la rama remota del compañero.
+// Mantener un stub vacío evita errores de análisis durante el trabajo en paralelo.
 
-import '../models/character.dart';
-
-/// Servicio mínimo que devuelve una lista vacía de personajes.
-/// Puedes reemplazar la implementación para hacer llamadas HTTP reales.
 class ApiService {
-  Future<List<Character>> fetchCharacters() async {
-    // Implementación mínima: retornar lista vacía para no romper la UI.
-    return Future.value(<Character>[]);
-  }
+  /// Stub que retorna lista vacía. Reemplazar por la implementación remota.
+  Future<List<dynamic>> fetchCharacters() async => <dynamic>[];
 }

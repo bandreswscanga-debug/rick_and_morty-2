@@ -1,22 +1,8 @@
-class Character {
-  final int id;
-  final String name;
-  final String status;
-  final String image;
+// Este archivo ha sido deshabilitado localmente para evitar conflictos de
+// merge: el modelo `Character` se gestiona en la rama/remoto del compañero.
+// Si necesitas reactivar una implementación local, coordina con el equipo.
 
-  Character({
-    required this.id,
-    required this.name,
-    required this.status,
-    required this.image,
-  });
+// Nota: mantenemos el archivo presente para que otros imports no rompan el
+// análisis hasta que la rama remota sea fusionada.
 
-  factory Character.fromJson(Map<String, dynamic> json) {
-    return Character(
-      id: json['id'] as int? ?? 0,
-      name: json['name'] as String? ?? 'Unknown',
-      status: json['status'] as String? ?? 'unknown',
-      image: json['image'] as String? ?? '',
-    );
-  }
-}
+// Archivo intencionalmente vacío.
