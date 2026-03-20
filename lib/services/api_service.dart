@@ -1,8 +1,26 @@
-// Servicio deshabilitado localmente: la implementación real de API
-// (incluyendo `Character`) se gestiona en la rama remota del compañero.
-// Mantener un stub vacío evita errores de análisis durante el trabajo en paralelo.
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../models/character.dart';
 
 class ApiService {
-  /// Stub que retorna lista vacía. Reemplazar por la implementación remota.
-  Future<List<dynamic>> fetchCharacters() async => <dynamic>[];
+  final String url = "https://rickandmortyapi.com/api/character";
+
+  //  Obtener personajes
+  Future<List<Character>> fetchCharacters() async {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List results = data['results'];
+
+      return results.map((e) => Character.fromJson(e)).toList();
+    } else {
+      throw Exception('Error al cargar personajes');
+    }
+  }
+
+  //  Filtrar por estado (Alive, Dead, unknown)
+  List<Character> filterByStatus(List<Character> list, String status) {
+    return list.where((c) => c.status == status).toList();
+  }
 }
